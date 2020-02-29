@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Gamedev Canvas Workshop</title>
+    <style>
+    	* { padding: 0; margin: 0; }
+    	canvas {
+        background: (#eee);
+        display: block;
+        margin: 0 auto;
+      }
+      #container{
+          display:inline-block;
+          width:320px;
+          height:480px;
+          margin: 0 auto;
+          background: black;
+          position:relative;
+          border:5px solid black;
+          border-radius: 10px;
+          box-shadow: 0 5px 50px #333}
+      #myCanvas{
+        position:absolute;
+        z-index:20;
+      }
+
+      .img{position:absolute;z-index:1;}
+    </style>
+</head>
+<body>
+
+  <img class='img' src="images/background.png" width="700">
+  <canvas id="myCanvas" width="700" height="700"></canvas>
+
+  <img id='trump' src="images/trump.png" width=100 height=100>
+  <img id='tampon' src="images/tampon.png" width=100 height=100>
+  <img id='panties' src="images/panties.png" width=100 height=100>
+  <img id='stain' src="images/stain.png" width=100 height=100>
+
+
+
+  <script>
+    var canvas = document.getElementById("myCanvas");
+    var ctx = canvas.getContext("2d");
+    var tamponWidth = 65;
+    var tamponHeight = 160;
+    var x = canvas.width/2;
+    var y = canvas.height-tamponHeight;
+    var dx = 2;
+    var dy = -2;
+    var ballRadius = 10;
+    var paddleHeight = 200;
+    var paddleWidth = 150;
+    var paddleX = (canvas.width-paddleWidth)/2;
+    var rightPressed = false;
+    var leftPressed = false;
+
+
+    var brickRowCount = 1;
+    var brickColumnCount = 6;
+    var brickWidth = 100;
+    var brickHeight = 80;
+    var brickPadding =15;
+    var brickOffsetTop = 40;
+    var brickOffsetLeft = 15;
+    var bricks = [];
+    for(c=0; c<brickColumnCount; c++) {
+    bricks[c] = [];
+    for(r=0; r<brickRowCount; r++) {
+        bricks[c][r] = { x: 0, y: 0 };
+    }
+}
+    var brickX = (c*(brickWidth+brickPadding))+brickOffsetLeft;
+    var brickY = (r*(brickHeight+brickPadding))+brickOffsetTop;
+
+    var bricks = [];
+for(c=0; c<brickColumnCount; c++) {
+    bricks[c] = [];
+    for(r=0; r<brickRowCount; r++) {
+        bricks[c][r] = { x: 0, y: 0, status: 1 };
+    }
+}
+
+
+    var score = 0;
+    var won = 5;
+    var lives = 3;
+
+
+    var img=document.getElementById("panties");
+    var img=document.getElementById("stain")
+    var img=document.getElementById("stain");
+    var img=document.getElementById("trump");
+
+
+
+
+    function drawtampon() {
+      //window.onload = function() {
+          ctx.drawImage(tampon,x,y,tamponWidth,tamponHeight);
+
+      ctx.beginPath();
+      ctx.fill();
+      ctx.closePath();
+      x += dx;
+      y += dy;
+
+    }
+
+  function drawPaddle() {
+    //window.onload = function() {
+        ctx.drawImage(img,paddleX,500,paddleWidth,paddleHeight);
+
+        if(rightPressed && paddleX < canvas.width-paddleWidth) {
+          paddleX += 7;
+      }
+      else if(leftPressed && paddleX > 0) {
+          paddleX -= 7;
+      }
+
+    //};
+  }
+
+
+
+
+  function draw() {
+    if(x + dx > canvas.width - tamponWidth || x + dx < 0) {
+      dx = -dx;
+    }
+    if(y + dy > canvas.height || y + dy < 0) {
+      dy = -dy;
+    }
+
+    if(rightPressed && paddleX < canvas.width-paddleWidth) {
+      paddleX += 7;
+    }
+    else if(leftPressed && paddleX > 0) {
+      paddleX -= 7;
+    }
+
+    if(y + dy < ballRadius) { // top of screen
+      dy = -dy;
+    } else if(y + dy > canvas.height-tamponHeight) { // crossing bottom
+      if(x > paddleX && x < paddleX + paddleWidth) {
+          dy = -dy;
+      }
+      else {
+        lives--;
+        if(!lives) {
+          {
+            
+            window.clearTimeout(drawLoop);
+            ctx.font = "80px Helvetica";
+            ctx.fillStyle = "#FFFFF";
+            ctx.fillText("</3", 130, 400);
+          }
+        }
+        else {
+            x = canvas.width/2;
+            y = canvas.height-tamponHeight;
+            dx = 2;
+            dy = -2;
+            paddleX = (canvas.width-paddleWidth)/2;
+        }
+      }
+    }
+
+
+
+
+
+  function drawBricks() {
+
+    for(c=0; c<brickColumnCount; c++) {
+        for(r=0; r<brickRowCount; r++) {
+            var brickX = (c*(brickWidth+brickPadding))+brickOffsetLeft;
+            var brickY = (r*(brickHeight+brickPadding))+brickOffsetTop;
+            bricks[c][r].x = brickX;
+            bricks[c][r].y = brickY;
+
+            //window.onload = function() {
+            if(bricks[c][r].status==1) {
+              ctx.drawImage(panties,brickX,brickY,brickWidth,brickHeight);
+            } else {
+              ctx.drawImage(stain,brickX,brickY,brickWidth,brickHeight);
+            }
+
+            //ctx.beginPath();
+            //ctx.rect(brickX, brickY, brickWidth, brickHeight);
+            //ctx.fillStyle = "#0095DD";
+            //ctx.fill();
+            //ctx.closePath();
+        }
+    }
+}
+
+
+
+function collisionDetection() {
+    for(c=0; c<brickColumnCount; c++) {
+        for(r=0; r<brickRowCount; r++) {
+            var b = bricks[c][r];
+            if(b.status == 1) {
+                if(x > b.x && x < b.x+brickWidth && y > b.y && y < b.y+brickHeight) {
+                    dy = -dy;
+                    b.status = 0;
+                    score++;
+                    if(score == brickRowCount*brickColumnCount) {
+
+                    drawWon();
+
+
+                  }
+                }
+              }
+            }
+          }
+        }
+
+
+
+
+
+function drawWon() {
+    setTimeout(function() {
+      window.clearTimeout(drawLoop);
+      ctx.font = "80px Helvetica";
+      ctx.fillStyle = "#FFFFF";
+      ctx.fillText("YAAAAS <3", 130, 400);
+    }, 20);
+
+
+}
+
+
+
+function drawScore() {
+    ctx.font = "16px Helvetica";
+    ctx.fillStyle = "#FFFFF";
+    ctx.fillText("Score: "+score, 8, 20);
+}
+
+
+
+function drawLives() {
+      ctx.font = "16px Helvetica";
+      ctx.fillStyle = "#FFFFF";
+      ctx.fillText("Lives: "+lives, canvas.width-65, 20);
+        }
+
+
+
+
+
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawPaddle();
+    drawtampon();
+    drawBricks();
+    collisionDetection();
+    drawScore();
+    drawLives();
+  }
+
+
+
+
+
+
+
+
+  document.addEventListener("keydown", keyDownHandler, false);
+  document.addEventListener("keyup", keyUpHandler, false);
+
+  function keyDownHandler(e) {
+  if(e.keyCode == 39) {
+      rightPressed = true;
+  }
+  else if(e.keyCode == 37) {
+      leftPressed = true;
+  }
+}
+
+function keyUpHandler(e) {
+  if(e.keyCode == 39) {
+      rightPressed = false;
+  }
+  else if(e.keyCode == 37) {
+      leftPressed = false;
+  }
+}
+
+
+document.addEventListener("mousemove", mouseMoveHandler, false);
+function mouseMoveHandler(e) {
+    var relativeX = e.clientX - canvas.offsetLeft;
+    if(relativeX > 0 && relativeX < canvas.width) {
+        paddleX = relativeX - paddleWidth/2;
+    }
+}
+
+var drawLoop = setInterval(draw, 10);
+
+
+
+  </script>
+
+
+
+
+
+  </body>
+</html>
