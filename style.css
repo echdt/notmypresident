@@ -16,3 +16,11 @@ body{text-align: center;background: #f2f6f8;}
     position:relative;
     z-index:20;
 }
+
+html.touch div {
+    width: 480px;
+}
+
+html.no-touch div {
+    width: auto;
+}
