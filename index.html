@@ -317,25 +317,6 @@ var drawLoop = setInterval(draw, 10);
 
 
 
-function is_touch_device4() {
-    
-    var prefixes = ' -webkit- -moz- -o- -ms- '.split(' ');
-    
-    var mq = function (query) {
-        return window.matchMedia(query).matches;
-    }
-
-    if (('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch) {
-        return true;
-    }
-
-    var query = ['(', prefixes.join('touch-enabled),('), 'trump', ')'].join('');
-    return mq(query);
-}
-
-console.log(is_touch_device4());
-
-$('html.touch #popup').hide();
 
 
   </script>
