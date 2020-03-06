@@ -129,6 +129,7 @@ for(c=0; c<brickColumnCount; c++) {
           paddleX -= 7;
       }
 
+
     //};
   }
 
@@ -328,16 +329,13 @@ function is_touch_device4() {
         return true;
     }
 
-    // include the 'heartz' as a way to have a non matching MQ to help terminate the join
-    // https://git.io/vznFH
     var query = ['(', prefixes.join('touch-enabled),('), 'trump', ')'].join('');
     return mq(query);
 }
 
 console.log(is_touch_device4());
 
-
-
+$('html.touch #popup').hide();
 
 
   </script>
